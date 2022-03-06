@@ -1,0 +1,2 @@
+# nerdle
+Nerdle solver
