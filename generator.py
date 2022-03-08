@@ -122,35 +122,120 @@ def generate_2d_result_solutions():
     # a+b-c = b+a-c = a-c+b = b-c+a = dd
     for c in range(0, 9):
         for a in range(c, 10):
-            for b in range(10+c-a, 10):
+            for b in range(10 + c - a, 10):
                 if a < 0:
                     continue
                 d = a + b - c
-                result.append("{}+{}-{}={}".format(a, b, c, d))  
+                result.append("{}+{}-{}={}".format(a, b, c, d))
                 result.append("{}-{}+{}={}".format(a, c, b, d))
 
-    # Sum - Division | Division - Sum
+    # Sum - Div | Div - Sum
     # a+b/c = b/c+a = dd
     for a in range(1, 10):
-        for b in range(10-a, 10):
-            for c in range(1, b+1):
-                if a + b / c < 10: break
-                if b % c != 0: continue
+        for b in range(10 - a, 10):
+            for c in range(1, b + 1):
+                if a + b / c < 10:
+                    break
+
+                if b % c != 0:
+                    continue
+
                 d = a + (b / c)
                 result.append("{}+{}/{}={}".format(a, b, c, int(d)))
                 result.append("{}/{}+{}={}".format(b, c, a, int(d)))
 
+    # Sum - Mul | Mul - Sum
+    # a+b*c = b*c+a = dd
+    for a in range(0, 10):
+        for b in range(0, 10):
+            for c in range(0, 10):
+                d = a+b*c
+                if d > 99:
+                    break
+                if d < 10:
+                    continue
+
+                result.append("{}+{}*{}={}".format(a, b, c, int(d)))
+                result.append("{}*{}+{}={}".format(b, c, a, int(d)))
+
+    # Dif - Dif
+    # Since the greater value obtainable from the difference of three numbers of one digit is 9-0-0=9
+    # Then it follows that the set generated with two dif operations is not in the solution set
+
+    # Dif - Div | Div - Dif
+    # Same argument as dif dif
+
+    # Dif - Mul | Mul - Dif
+    # While Dif - Mul is not possible, Mul - Dif is.
+    # a-b*c = b*c-a = dd
+    for b in range(0, 10):
+        for c in range(0, 10):
+            for a in range(0, 10):
+                d = b*c-a
+                if d < 0:
+                    break
+
+                if d < 10:
+                    continue
+
+                result.append("{}*{}-{}={}".format(b, c, a, d))
+
+    # Div - Div
+    # Same as Dif - Dif
+
+
+    # Div - Mul | Mul - Div
+    # Div - Mul is not possible, but Mul - Div is
+    # b*c/a = dd
+    for b in range(1, 10):
+        for c in range(1, 10):
+            if b*c < 10:
+                continue
+
+            for a in range(1, 10):
+                if b*c % a != 0:
+                    continue
+
+                d = b*c / a
+                if d < 10:
+                    break
+
+                result.append("{}*{}/{}={}".format(b, c, a, int(d)))
+
+
+    # Mul - Mul
+    for a in range(1, 10):
+        for b in range(1, 10):
+            for c in range(1, 10):
+                d = a * b * c
+                if d < 10:
+                    continue
+
+                if d > 100:
+                    break
+
+                result.append("{}*{}*{}={}".format(a, b, c, d))
+
     return result
 
 
-"""
-    # || a+b*c=dd || a+b-c=dd || a+(b/c)=dd || a
-"""
+def generate_1d_result_solutions():
+    """
+    Left without implementation. It is similar to 2d solutions, but larger.
+    For the purpose of this program I will work only with the solution set with 3 and 2 digit results.
+
+    :return:
+    """
+
 
 if __name__ == "__main__":
     solutions = generate_3d_result_solutions()
     solutions += generate_2d_result_solutions()
 
+    if not os.path.isdir(DATA_DIR):
+        os.mkdir(DATA_DIR)
+
     f = open(POSSIBLE_WORDS_LIST_FILE, "w")
-    for s in solutions: f.write(s + "\n")
+    for s in solutions:
+        f.write(s + "\n")
     f.close()
