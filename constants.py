@@ -5,7 +5,7 @@ DATA_DIR = os.path.join(
     "data",
 )
 
-POSSIBLE_WORDS_LIST_FILE = os.path.join(DATA_DIR, "possible_words.txt")
+WORD_LIST_FILE = os.path.join(DATA_DIR, "words.txt")
 PATTERN_MATRIX_FILE = os.path.join(DATA_DIR, "pattern_matrix.npy")
 
-PATTERN_MATRIX = os.path.join(DATA_DIR, "possible_words.txt")
+PATTERN_MATRIX = os.path.join(DATA_DIR, "words.txt")

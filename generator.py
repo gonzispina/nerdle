@@ -231,7 +231,7 @@ if __name__ == "__main__":
     if not os.path.isdir(DATA_DIR):
         os.mkdir(DATA_DIR)
 
-    f = open(POSSIBLE_WORDS_LIST_FILE, "w")
+    f = open(WORD_LIST_FILE, "w")
     for s in solutions:
         f.write(s + "\n")
     f.close()

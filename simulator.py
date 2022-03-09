@@ -1,26 +1,31 @@
+from tqdm import tqdm as ProgressDisplay
 import itertools as it
+import random
+
 import numpy as np
 
 from constants import *
 
-POSSIBLE_WORDS = []
+WORD_LIST = []
 PATTERN_GRID_DATA = dict()
 
-def get_possible_words():
-    global POSSIBLE_WORDS
-    if POSSIBLE_WORDS:
-        return POSSIBLE_WORDS
 
-    with open(POSSIBLE_WORDS_LIST_FILE, "r") as f:
+def get_all_words():
+    global WORD_LIST
+    if WORD_LIST:
+        return WORD_LIST
+
+    with open(WORD_LIST_FILE, "r") as f:
         possible_words = [line.rstrip() for line in f]
     f.close()
 
-    POSSIBLE_WORDS += possible_words
-    return POSSIBLE_WORDS
+    WORD_LIST += possible_words
+    return WORD_LIST
 
 
 def word_to_int_array(word):
-    return np.array([ord(l)for l in word], dtype=np.uint8)
+    return np.array([ord(l) for l in word], dtype=np.uint8)
+
 
 def generate_pattern_matrix(words):
     n = len(words)
@@ -72,7 +77,7 @@ def generate_pattern_matrix(words):
 
 
 def generate_full_pattern_matrix():
-    words = get_possible_words()
+    words = get_all_words()
     pattern_matrix = generate_pattern_matrix(words)
 
     # Save to file
@@ -93,7 +98,7 @@ def get_pattern_matrix(words1, words2):
             generate_full_pattern_matrix()
         PATTERN_GRID_DATA['grid'] = np.load(PATTERN_MATRIX_FILE)
         PATTERN_GRID_DATA['words_to_index'] = dict(zip(
-            get_possible_words(), it.count()
+            get_all_words(), it.count()
         ))
 
     full_grid = PATTERN_GRID_DATA['grid']
@@ -108,5 +113,50 @@ def get_pattern(guess, answer):
     return get_pattern_matrix([guess], [answer])[0, 0]
 
 
+def get_possible_words(guess, pattern, possibilities):
+    all_patterns = get_pattern_matrix([guess], possibilities).flatten()
+    return list(np.array(possibilities)[all_patterns == pattern])
+
+
+def simulate():
+    words = get_all_words()
+
+    first_guess = words[random.randint(0, len(words)-1)]
+
+    patterns = []
+    scores = np.zeros(0, dtype=int)
+    scores_dist = dict()
+
+    for answer in ProgressDisplay(words, leave=False, desc=" Trying all nerdle answers"):
+        score = 0
+        guesses = []
+        possibilities = words
+        guess = first_guess
+
+        while answer != guess:
+            guesses.append(guess)
+            pattern = get_pattern(guess, answer)
+            patterns.append(pattern)
+
+            possibilities = get_possible_words(guess, pattern, possibilities)
+            guess = possibilities[random.randint(0, len(possibilities)-1)]
+            score += 1
+
+        scores = np.append(scores, [score])
+        score_dist = [
+            int((scores == i).sum())
+            for i in range(1, scores.max() + 1)
+        ]
+
+    final_result = dict(
+        score_distribution=score_dist,
+        # total_guesses=int(total_guesses),
+        average_score=float(scores.mean()),
+        # game_results=game_results,
+    )
+
+    return final_result
+
+
 if __name__ == "__main__":
-    print(get_pattern("91+9=100", "9+91=100"))
+    simulate()
