@@ -1,14 +1,7 @@
-import itertools
 import os.path
+from constants import *
 
-from math import floor, ceil
-
-DATA_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    "data",
-)
-
-POSSIBLE_WORDS_LIST_FILE = os.path.join(DATA_DIR, "possible_words.txt")
+from math import ceil
 
 
 def generate_3d_result_solutions():
@@ -49,7 +42,8 @@ def generate_3d_result_solutions():
     for a in range(12, 99):
         for b in range(ceil(100 / a), 10):
             c = a * b
-            if c > 999: break
+            if c > 999:
+                break
             result.append("{}*{}={}".format(a, b, c))
             result.append("{}*{}={}".format(b, a, c))  # Commutation
 
@@ -112,10 +106,12 @@ def generate_2d_result_solutions():
 
     # Sum - Sum
     # a+b+c = a+c+b = b+a+c = b+c+a = c+a+b = c+b+a = dd
-    for a in range(1, 10):
-        for b in range(1, 10):
-            for c in range(10 - (a + b), 10):
+    for a in range(0, 10):
+        for b in range(0, 10):
+            for c in range(0, 10):
                 d = a + b + c
+                if d < 10:
+                    continue
                 result.append("{}+{}+{}={}".format(a, b, c, d))
 
     # Sum - Difference | Difference - Sum
@@ -166,7 +162,7 @@ def generate_2d_result_solutions():
     # Same argument as dif dif
 
     # Dif - Mul | Mul - Dif
-    # While Dif - Mul is not possible, Mul - Dif is.
+    # While Dif - Mul is not possible (same as Dif - Dif), Mul - Dif is.
     # a-b*c = b*c-a = dd
     for b in range(0, 10):
         for c in range(0, 10):
@@ -185,7 +181,7 @@ def generate_2d_result_solutions():
 
 
     # Div - Mul | Mul - Div
-    # Div - Mul is not possible, but Mul - Div is
+    # Div - Mul is not possible (same as Dif - Dif), but Mul - Div is
     # b*c/a = dd
     for b in range(1, 10):
         for c in range(1, 10):
@@ -211,7 +207,7 @@ def generate_2d_result_solutions():
                 if d < 10:
                     continue
 
-                if d > 100:
+                if d > 99:
                     break
 
                 result.append("{}*{}*{}={}".format(a, b, c, d))
