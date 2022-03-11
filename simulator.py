@@ -89,13 +89,6 @@ def generate_full_pattern_matrix():
 def get_pattern_matrix(words1, words2):
     if not PATTERN_GRID_DATA:
         if not os.path.exists(PATTERN_MATRIX_FILE):
-            """
-            log.info("\n".join([
-                "Generating pattern matrix. This takes a minute, but",
-                "the result will be saved to file so that it only",
-                "needs to be computed once.",
-            ]))
-            """
             generate_full_pattern_matrix()
         PATTERN_GRID_DATA['grid'] = np.load(PATTERN_MATRIX_FILE)
         PATTERN_GRID_DATA['words_to_index'] = dict(zip(
@@ -184,34 +177,15 @@ def get_entropies(allowed_words, possible_words):
     return entropy(distributions, base=2, axis=0)
 
 
-def optimal_guess(allowed_words, possible_words,
-                  priors=[],
-                  look_two_ahead=False,
-                  optimize_for_uniform_distribution=False,
-                  purely_maximize_information=False,
-                  ):
-
+def optimal_guess(allowed_words, possible_words):
     """
-    if purely_maximize_information:
-        if len(possible_words) == 1:
-            return possible_words[0]
-        weights = get_weights(possible_words, priors)
-        ents = get_entropies(allowed_words, possible_words, weights)
-        return allowed_words[np.argmax(ents)]
-
+    if len(possible_words) == 1:
+        return possible_words[0]
+    ents = get_entropies(allowed_words, possible_words)
+    return allowed_words[np.argmax(ents)]
     """
 
-    # Just experimenting here...
-    # if optimize_for_uniform_distribution:
-    expected_scores = get_score_lower_bounds(
-        allowed_words, possible_words
-    )
-    # else:
-    #    expected_scores = get_expected_scores(
-    #        allowed_words, possible_words, priors,
-    #        look_two_ahead=look_two_ahead
-    #    )
-
+    expected_scores = get_score_lower_bounds(allowed_words, possible_words)
     return allowed_words[np.argmin(expected_scores)]
 
 
