@@ -100,6 +100,7 @@ def get_pattern_matrix(words1, words2):
 
     indices1 = [words_to_index[w] for w in words1]
     indices2 = [words_to_index[w] for w in words2]
+
     return full_grid[np.ix_(indices1, indices2)]
 
 
@@ -189,6 +190,20 @@ def optimal_guess(allowed_words, possible_words):
     return allowed_words[np.argmin(expected_scores)]
 
 
+def pattern_to_int_list(pattern):
+    result = []
+    curr = pattern
+    for x in range(8):
+        result.append(curr % 3)
+        curr = curr // 3
+    return result
+
+
+def pattern_to_string(pattern):
+    d = {0: "⬛", 1: "🟨", 2: "🟩"}
+    return "".join(d[x] for x in pattern_to_int_list(pattern))
+
+
 def simulate():
     words = get_all_words()
 
@@ -228,6 +243,3 @@ def simulate():
 
     return final_result
 
-
-if __name__ == "__main__":
-    print(simulate())
